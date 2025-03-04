@@ -1,9 +1,7 @@
-diff --git a/hooks-encrypt b/hooks-encrypt-dh
-index 882d5fb..5343fc1 100644
---- a/hooks-encrypt
-+++ b/hooks-encrypt-dh
-@@ -33,6 +33,40 @@ EOF
-         [ ! -f ${ckeyfile} ] && echo "Keyfile could not be opened. Reverting to passphrase."
+--- encrypt	2024-07-13 15:01:49.172799574 -0400
++++ hooks-encrypt-dh	2024-07-13 15:03:51.889462155 -0400
+@@ -38,6 +38,40 @@
+         [ ! -f "${ckeyfile}" ] && echo "Keyfile could not be opened. Reverting to passphrase."
      fi
  
 +    # Get detached header file if specified
@@ -42,22 +40,21 @@ index 882d5fb..5343fc1 100644
 +
      if [ -n "${cryptdevice}" ]; then
          DEPRECATED_CRYPT=0
-         IFS=: read cryptdev cryptname cryptoptions <<EOF
-@@ -67,7 +101,7 @@ EOF
-     done
+         # cryptdevice can contain : which needs to be escaped.
+@@ -88,7 +122,7 @@
+     unset OLDIFS
  
-     if resolved=$(resolve_device "${cryptdev}" ${rootdelay}); then
--        if cryptsetup isLuks ${resolved} >/dev/null 2>&1; then
+     if resolved=$(resolve_device "${cryptdev}" "${rootdelay}"); then
+-        if cryptsetup isLuks "${resolved}" >/dev/null 2>&1; then
 +        if (cryptsetup isLuks ${resolved} >/dev/null 2>&1 || cryptsetup isLuks ${cheaderfile} >/dev/null 2>&1); then
-             [ ${DEPRECATED_CRYPT} -eq 1 ] && warn_deprecated
+             [ "${DEPRECATED_CRYPT}" -eq 1 ] && warn_deprecated
              dopassphrase=1
              # If keyfile exists, try to use that
-@@ -138,7 +172,8 @@ EOF
+@@ -165,7 +199,7 @@
              err "Failed to open encryption mapping: The device ${cryptdev} is not a LUKS volume and the crypto= paramater was not specified."
          fi
      fi
--    rm -f ${ckeyfile}
-+
+-    rm -f "${ckeyfile}"
 +    rm -f ${ckeyfile} ${cheaderfile}
  }
  

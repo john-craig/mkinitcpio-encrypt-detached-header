@@ -1,7 +1,7 @@
 # Maintainer: Maxim Baz <$pkgname at maximbaz dot com>
 
 pkgname=mkinitcpio-encrypt-detached-header
-pkgver=1.0.0
+pkgver=1.0.1
 pkgrel=1
 pkgdesc="cryptsetup's initcpio encrypt hook with support for detached header FS#42851"
 arch=('any')
